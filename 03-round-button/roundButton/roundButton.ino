@@ -1,49 +1,75 @@
 #include <M5Unified.h>
 
-const int buttonX = 160;
-const int buttonY = 120;
-const int buttonRadius = 50;
-
-void drawButton(const int color) {
-  M5.Display.fillScreen(BLACK);
-  M5.Display.fillCircle(buttonX, buttonY, buttonRadius, color);
+struct roundButton {
+  int x; 
+  int y; 
+  int radius; 
+  bool status; 
 }
 
-void drawButtonText(char* text) {
-  M5.Display.setCursor(135, 100);
+roundButton lightButton = {160,120,50, true};  
+
+void drawButtonCircle(bool state) {
+  if (state) {
+    M5.Display.fillCircle(lightButton.x, ightButton.y, lightButton.radius, GREEN); 
+  } else {
+    M5.Display.fillCircle(lightButton.x, lightButton.y, lightButton.radius, RED);
+  }
+}
+/*
+void drawButtonText(bool state) {
   M5.Display.setTextColor(WHITE);
   M5.Display.setTextSize(4);
-  M5.Display.print(text);
+  M5.Display.setTextDatum(MC_DATUM);
+  
+  if (state) {
+    M5.Display.drawString("ON", buttonX, buttonY);
+  } else{
+    M5.Display.drawString("OFF", buttonX, buttonY);
+  }
 }
+
+void drawButton() {
+  M5.Display.fillScreen(BLACK);
+
+  drawButtonCircle(buttonState);
+  drawButtonText(buttonState);
+}
+
+bool isButtonTouched() {
+
+  if(M5.Touch.getCount() == 0) {
+    return false; 
+  }
+
+  auto detail = M5.Touch.getDetail(0);
+
+  if (!detail.wasPressed()) {
+    return false; 
+  }
+
+  int dx = detail.x - buttonX; 
+  int dy = detail.y - buttonY; 
+
+  int distanceSquared = (dx * dx) + (dy * dy);
+  int radiusSquared = buttonRadius * buttonRadius; 
+
+  return distanceSquared <= radiusSquared; 
+}
+*/
 
 void setup() {
   auto cfg = M5.config();
   M5.begin(cfg);
 
-  drawButton(GREEN);
-  drawButtonText("ON");
+  //drawButton();
 }
 
 void loop() {
   M5.update();
 
-  if (M5.Touch.getCount() > 0) {
-    auto detail = M5.Touch.getDetail(0);
-
-    if (detail.isPressed()) {
-      int touchX = detail.x;
-      int touchY = detail.y;
-
-      int dx = touchX - buttonX;
-      int dy = touchY - buttonY;
-
-      int distanceSquared = (dx * dx) + (dy * dy);
-      int radiusSquared = buttonRadius * buttonRadius;
-
-      if (distanceSquared <= radiusSquared) {
-        drawButton(RED);
-        drawButtonText("OFF");
-      }
-    }
-  }
+  //if (isButtonTouched()) {
+  //  buttonState = !buttonState; 
+  //  drawButton(); 
+  //}   
 }
