@@ -36,7 +36,7 @@ void drawButton(const RoundButton& button) {
   drawButtonText(button);
 }
 
-bool isButtonTouched() {
+bool isButtonTouched(const RoundButton& button) {
 
   if(M5.Touch.getCount() == 0) {
     return false; 
@@ -48,11 +48,11 @@ bool isButtonTouched() {
     return false; 
   }
 
-  int dx = detail.x - buttonX; 
-  int dy = detail.y - buttonY; 
+  int dx = detail.x - button.x; 
+  int dy = detail.y - button.y; 
 
   int distanceSquared = (dx * dx) + (dy * dy);
-  int radiusSquared = buttonRadius * buttonRadius; 
+  int radiusSquared = button.radius * button.radius; 
 
   return distanceSquared <= radiusSquared; 
 }
@@ -68,8 +68,8 @@ void setup() {
 void loop() {
   M5.update();
 
-  if (isButtonTouched()) {
-    buttonState = !buttonState; 
-    drawButton(); 
+  if (isButtonTouched(lightButton)) {
+    lightButton.status = !lightButton.status;
+    drawButton(lightButton); 
   }   
 }
