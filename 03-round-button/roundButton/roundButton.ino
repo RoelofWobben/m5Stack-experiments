@@ -1,39 +1,39 @@
 #include <M5Unified.h>
 
-struct roundButton {
+struct RoundButton {
   int x; 
   int y; 
   int radius; 
   bool status; 
-}
+};
 
-roundButton lightButton = {160,120,50, true};  
+RoundButton lightButton = {160,120,50, true};  
 
-void drawButtonCircle(bool state) {
-  if (state) {
-    M5.Display.fillCircle(lightButton.x, ightButton.y, lightButton.radius, GREEN); 
+void drawButtonCircle(const RoundButton& button) {
+  if (button.status) {
+    M5.Display.fillCircle(button.x, button.y, button.radius, GREEN); 
   } else {
-    M5.Display.fillCircle(lightButton.x, lightButton.y, lightButton.radius, RED);
+    M5.Display.fillCircle(button.x, button.y, button.radius, RED);
   }
 }
-/*
-void drawButtonText(bool state) {
+
+void drawButtonText(const RoundButton& button) {
   M5.Display.setTextColor(WHITE);
   M5.Display.setTextSize(4);
   M5.Display.setTextDatum(MC_DATUM);
   
-  if (state) {
-    M5.Display.drawString("ON", buttonX, buttonY);
+  if (button.status) {
+    M5.Display.drawString("ON", button.x, button.y);
   } else{
-    M5.Display.drawString("OFF", buttonX, buttonY);
+    M5.Display.drawString("OFF", button.x, button.y);
   }
 }
 
-void drawButton() {
+void drawButton(const RoundButton& button) {
   M5.Display.fillScreen(BLACK);
 
-  drawButtonCircle(buttonState);
-  drawButtonText(buttonState);
+  drawButtonCircle(button);
+  drawButtonText(button);
 }
 
 bool isButtonTouched() {
@@ -56,20 +56,20 @@ bool isButtonTouched() {
 
   return distanceSquared <= radiusSquared; 
 }
-*/
+
 
 void setup() {
   auto cfg = M5.config();
   M5.begin(cfg);
 
-  //drawButton();
+  drawButton(lightButton);
 }
 
 void loop() {
   M5.update();
 
-  //if (isButtonTouched()) {
-  //  buttonState = !buttonState; 
-  //  drawButton(); 
-  //}   
+  if (isButtonTouched()) {
+    buttonState = !buttonState; 
+    drawButton(); 
+  }   
 }
