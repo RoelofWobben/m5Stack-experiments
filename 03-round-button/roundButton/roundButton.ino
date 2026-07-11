@@ -1,6 +1,7 @@
 
 #include <M5Unified.h>
 #include "light_off.h"
+#include "light_on.h"
 
 const int lightIcon_width  = 32;
 const int lightIcon_height = 32;
@@ -50,6 +51,17 @@ void drawButton(const RoundButton& button) {
   drawButtonCircle(button);
   drawButtonIcon(button);
   drawButtonText(button);
+}
+
+
+
+void drawButtonIcon(const RoundButton& button) {
+  M5.Display.setSwapBytes(true);
+  if (button.status) {
+    M5.Display.pushImage(120, 100, 32, 32, lightIconOn, 0xFFFF);
+  } else {
+    M5.Display.pushImage(120, 100, 32, 32, lightIcon, 0xFFFF);
+  }
 }
 
 bool isButtonTouched(const RoundButton& button) {
