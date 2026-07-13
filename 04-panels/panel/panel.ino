@@ -90,13 +90,13 @@ RectButton getOffButton(const Panel& panel) {
   return { panel.x + 160, panel.y + 50, 120, 40, "OFF" };
 }
 
-void handlePanelTouch(const Panel& panel, bool& status) {
+void handlePanelTouch(const Panel& panel, bool& status, const uint16_t* iconOn, const uint16_t* iconOff) {
 
   if (!status && isButtonTouched(getOnButton(panel))) {
     status = true;
-    drawPanel(panel, status? iconOn: IconOff, status);
+    drawPanel(panel, status? iconOn: iconOff, status);
     drawButtons(panel, status);
-  }tus
+  }
 
   if (status && isButtonTouched(getOffButton(panel))){
     status = false;
@@ -116,6 +116,6 @@ void setup() {
 void loop() {
   M5.update();
 
-  handlePanelTouch(lightPanel,lightStatus );
-  handlePanelTouch(pompPanel, pompStatus);
+  handlePanelTouch(lightPanel,lightStatus, lightIconOn, lightIcon );
+  handlePanelTouch(pompPanel, pompStatus, pumpIconOn, pumpIconOff);
 }
