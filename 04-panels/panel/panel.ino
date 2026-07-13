@@ -43,8 +43,11 @@ void drawPanel(const Panel& panel, const uint16_t* icon, bool status) {
 }
 
 void drawPanels() {
-  drawPanel(lightPanel, lightStatus ? lightIcon : LightIconOff, lightStatus);
+  drawPanel(lightPanel, lightStatus ? lightIconOn : lightIcon, lightStatus);
+  drawButtons(lightPanel, lightStatus);
+  
   drawPanel(pompPanel, pompStatus ? pumpIconOn : pumpIconOff, pompStatus);
+  drawButtons(pompPanel, pompStatus);
 }
 
 void drawSingleButton(const RectButton& button, bool isActive) {
@@ -91,11 +94,13 @@ void handlePanelTouch(const Panel& panel, bool& status) {
 
   if (!status && isButtonTouched(getOnButton(panel))) {
     status = true;
+    drawPanel(panel, status? iconOn: IconOff, status);
     drawButtons(panel, status);
-  }
+  }tus
 
-  if (status && isButtonTouched(getOffButton(panel))) {
+  if (status && isButtonTouched(getOffButton(panel))){
     status = false;
+    drawPanel(panel, status ? iconOn: iconOff, status);
     drawButtons(panel, status);
   }
 }
@@ -105,16 +110,12 @@ void setup() {
   M5.begin(cfg);
   M5.Display.fillScreen(BLACK);
 
-  drawPanel(lightPanel);
-  drawButtons(lightPanel, lightStatus);
-
-  drawPanel(pompPanel);
-  drawButtons(pompPanel, pompStatus);
+  drawPanels(); 
 }
 
 void loop() {
   M5.update();
 
-  handlePanelTouch(lightPanel, lightStatus);
+  handlePanelTouch(lightPanel,lightStatus );
   handlePanelTouch(pompPanel, pompStatus);
 }
