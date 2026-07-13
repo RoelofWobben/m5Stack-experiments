@@ -1,5 +1,12 @@
 #include <M5Unified.h>
 
+#include "pump_off.h"
+#include "pump_on.h"
+#include "window_closed.h"
+#include "window_open.h"
+#include "light_off.h"
+#include "light_on.h"
+
 struct RectButton {
   int x, y, w, h;
   const char* label;
@@ -21,18 +28,23 @@ bool pompStatus = false;
 uint16_t panelColor = 0x18E3;
 uint16_t grey = 0x39C7;
 
-void drawPanel(const Panel& panel) {
+void drawPanel(const Panel& panel, const uint16_t* icon, bool status) {
   M5.Display.fillRoundRect(panel.x, panel.y, panel.w, panel.h, 12, panelColor);
 
+  // icon links in de titel rij
+  M5.Display.setSwapBytes(true);
+  M5.Display.pushImage(panel.x + 20, panel.y + 10, 32, 32, icon, 0xFFFF); 
+
+  // Titel tekst opgeschoven naar rechts van het icoon
   M5.Display.setTextColor(WHITE, panelColor);
   M5.Display.setTextSize(2);
-  M5.Display.setTextDatum(top_left);
-  M5.Display.drawString(panel.label, panel.x + 20, panel.y + 15);
+  M5.Display.setTextDatum(middle_left);
+  M5.Display.drawString(panel.label, panel.x + 62, panel.y + 26);
 }
 
 void drawPanels() {
-  drawPanel(lightPanel);
-  drawPanel(pompPanel);
+  drawPanel(lightPanel, lightStatus ? lightIcon : LightIconOff, lightStatus);
+  drawPanel(pompPanel, pompStatus ? pumpIconOn : pumpIconOff, pompStatus);
 }
 
 void drawSingleButton(const RectButton& button, bool isActive) {
