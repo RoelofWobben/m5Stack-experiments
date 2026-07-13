@@ -23,12 +23,6 @@ void drawButtonCircle(const RoundButton& button) {
   }
 }
 
-void drawButtonIcon(const RoundButton& button) {
-  // icoon iets links van het midden, verticaal gecentreerd
-  
-   M5.Display.setSwapBytes(true); 
-   M5.Display.pushImage(120,100,32,32,lightIcon, 0xFFFF);
-}
 
 void drawButtonText(const RoundButton& button) {
   M5.Display.setTextColor(BLACK);
