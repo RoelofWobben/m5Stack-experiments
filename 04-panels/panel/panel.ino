@@ -43,6 +43,12 @@ bool isDragging = false;
 int minScrollOffSet = 0;
 int maxScrollOffSet = 110;
 
+M5Canvas canvas(&M5.Display);
+
+void flush() {
+  canvas.pushSprite(0,0);
+}
+
 
 void handleScroll() {
 
@@ -60,11 +66,11 @@ void handleScroll() {
   }
 
   if (isDragging && detail.isDragging()) {
-    int deltaY = detail.x - touchStartY;
+    int deltaY = detail.y - touchStartY;
     int newOffSet = scrollStartOffSet - deltaY;
     newOffSet = constrain(newOffSet, minScrollOffSet, maxScrollOffSet);
 
-    if (newOffSet != scrollOffSet) {
+    if (newOffSet != scrollOffSet){
       scrollOffSet = newOffSet;
       M5.Display.fillScreen(BLACK);
       drawPanels();
@@ -73,20 +79,21 @@ void handleScroll() {
 }
 
 void drawPanel(const Panel& panel, const uint16_t* icon, bool status) {
-  M5.Display.fillRoundRect(panel.x, panel.y - scrollOffSet, panel.w, panel.h, 12, panelColor);
+  canvas.fillRoundRect(panel.x, panel.y - scrollOffSet, panel.w, panel.h, 12, panelColor);
 
-  // icon links in de titel rij
-  M5.Display.setSwapBytes(true);
-  M5.Display.pushImage(panel.x + 20, panel.y + 10 - scrollOffSet, 32, 32, icon, 0xFFFF);
+  canvas.pushImage(panel.x + 20, panel.y + 10 - scrollOffSet, 32, 32, icon, 0xFFFF);
 
   // Titel tekst opgeschoven naar rechts van het icoon
-  M5.Display.setTextColor(WHITE, panelColor);
-  M5.Display.setTextSize(2);
-  M5.Display.setTextDatum(middle_left);
-  M5.Display.drawString(panel.label, panel.x + 62, panel.y + 26 - scrollOffSet);
+  canvas.setTextColor(WHITE, panelColor);
+  canvas.setTextSize(2);
+  canvas.setTextDatum(middle_left);
+  canvas.drawString(panel.label, panel.x + 62, panel.y + 26 - scrollOffSet);
 }
 
 void drawPanels() {
+
+  canvas.fillScreen(BLACK);
+
   drawPanel(lightPanel, lightStatus ? lightIconOn : lightIcon, lightStatus);
   drawButtons(lightPanel, lightStatus);
 
@@ -95,18 +102,20 @@ void drawPanels() {
 
   drawPanel(windowPanel, windowStatus ? windowIconOpen : windowIconClosed, windowStatus);
   drawButtons(windowPanel, windowStatus);
+
+  flush(); 
 }
 
 void drawSingleButton(const RectButton& button, bool isActive) {
-  M5.Display.fillRect(button.x - 2, button.y - 2, button.w - 4, button.h + 4, panelColor);
+  canvas.fillRect(button.x - 2, button.y - 2, button.w - 4, button.h + 4, panelColor);
 
   uint16_t color = isActive ? GREEN : grey;
-  M5.Display.fillRoundRect(button.x, button.y, button.w, button.h, 10, color);
+  canvas.fillRoundRect(button.x, button.y, button.w, button.h, 10, color);
 
-  M5.Display.setTextColor(WHITE, color);
-  M5.Display.setTextSize(2);
-  M5.Display.setTextDatum(middle_center);
-  M5.Display.drawString(button.label, button.x + button.w / 2, button.y + button.h / 2);
+  canvas.setTextColor(WHITE, color);
+  canvas.setTextSize(2);
+  canvas.setTextDatum(middle_center);
+  canvas.drawString(button.label, button.x + button.w / 2, button.y + button.h / 2);
 }
 
 void drawButtons(const Panel& panel, bool status) {
@@ -155,7 +164,10 @@ void setup() {
   M5.begin(cfg);
   M5.Display.fillScreen(BLACK);
 
-  drawPanels();
+  canvas.setColorDepth(16);
+  canvas.createSprite(M5.Display.width(), M5.Display.height());
+
+  drawPanels(); 
 }
 
 void loop() {
