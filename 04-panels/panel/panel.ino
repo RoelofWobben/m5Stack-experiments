@@ -15,31 +15,69 @@ struct RectButton {
 struct Panel {
   int x, y, w, h;
   const char* label;
-  const char* textOn; 
-  const char* textOff; 
+  const char* textOn;
+  const char* textOff;
 };
 
 // drie panelen
-Panel lightPanel = { 10, 10, 300, 100, "Light", "On", "Off"};
+Panel lightPanel = { 10, 10, 300, 100, "Light", "On", "Off" };
 Panel pompPanel = { 10, 130, 300, 100, "Pomp", "On", "Off" };
-Panel windowPanel = {10, 250, 300,100, "Window", "Open", "Closed"};
+Panel windowPanel = { 10, 250, 300, 100, "Window", "Open", "Closed" };
 
 // Licht status
 bool lightStatus = false;
 bool pompStatus = false;
-bool windowStatus = false; 
+bool windowStatus = false;
 
 uint16_t panelColor = 0x18E3;
 uint16_t grey = 0x39C7;
 
-int scrollOffSet = 130; 
+int scrollOffSet = 0;
+
+// voor swipe detectie
+int touchStartY = 0;
+int scrollStartOffSet = 0;
+bool isDragging = false;
+
+// grenzen waarbinnen je mag scrollen
+int minScrollOffSet = 0;
+int maxScrollOffSet = 110;
+
+
+void handleScroll() {
+
+  if (M5.Touch.getCount() == 0) {
+    isDragging = false;
+    return;
+  }
+
+  auto detail = M5.Touch.getDetail(0);
+
+  if (detail.wasPressed()) {
+    touchStartY = detail.y;
+    scrollStartOffSet = scrollOffSet;
+    isDragging = true;
+  }
+
+  if (isDragging && detail.isDragging()) {
+    int deltaY = detail.x - touchStartY;
+    int newOffSet = scrollStartOffSet - deltaY;
+    newOffSet = constrain(newOffSet, minScrollOffSet, maxScrollOffSet);
+
+    if (newOffSet != scrollOffSet) {
+      scrollOffSet = newOffSet;
+      M5.Display.fillScreen(BLACK);
+      drawPanels();
+    }
+  }
+}
 
 void drawPanel(const Panel& panel, const uint16_t* icon, bool status) {
   M5.Display.fillRoundRect(panel.x, panel.y - scrollOffSet, panel.w, panel.h, 12, panelColor);
 
   // icon links in de titel rij
   M5.Display.setSwapBytes(true);
-  M5.Display.pushImage(panel.x + 20, panel.y + 10 - scrollOffSet, 32, 32, icon, 0xFFFF); 
+  M5.Display.pushImage(panel.x + 20, panel.y + 10 - scrollOffSet, 32, 32, icon, 0xFFFF);
 
   // Titel tekst opgeschoven naar rechts van het icoon
   M5.Display.setTextColor(WHITE, panelColor);
@@ -51,12 +89,12 @@ void drawPanel(const Panel& panel, const uint16_t* icon, bool status) {
 void drawPanels() {
   drawPanel(lightPanel, lightStatus ? lightIconOn : lightIcon, lightStatus);
   drawButtons(lightPanel, lightStatus);
-  
+
   drawPanel(pompPanel, pompStatus ? pumpIconOn : pumpIconOff, pompStatus);
   drawButtons(pompPanel, pompStatus);
 
-  drawPanel(windowPanel, windowStatus? windowIconOpen: windowIconClosed, windowStatus);
-  drawButtons(windowPanel, windowStatus); 
+  drawPanel(windowPanel, windowStatus ? windowIconOpen : windowIconClosed, windowStatus);
+  drawButtons(windowPanel, windowStatus);
 }
 
 void drawSingleButton(const RectButton& button, bool isActive) {
@@ -65,13 +103,11 @@ void drawSingleButton(const RectButton& button, bool isActive) {
   uint16_t color = isActive ? GREEN : grey;
   M5.Display.fillRoundRect(button.x, button.y, button.w, button.h, 10, color);
 
-
   M5.Display.setTextColor(WHITE, color);
   M5.Display.setTextSize(2);
   M5.Display.setTextDatum(middle_center);
   M5.Display.drawString(button.label, button.x + button.w / 2, button.y + button.h / 2);
 }
-
 
 void drawButtons(const Panel& panel, bool status) {
   RectButton onButton = getOnButton(panel);
@@ -92,7 +128,7 @@ bool isButtonTouched(const RectButton& button) {
 }
 
 RectButton getOnButton(const Panel& panel) {
-  return { panel.x , panel.y + 50 - scrollOffSet, 120, 40, panel.textOn };
+  return { panel.x, panel.y + 50 - scrollOffSet, 120, 40, panel.textOn };
 }
 
 RectButton getOffButton(const Panel& panel) {
@@ -103,13 +139,13 @@ void handlePanelTouch(const Panel& panel, bool& status, const uint16_t* iconOn, 
 
   if (!status && isButtonTouched(getOnButton(panel))) {
     status = true;
-    drawPanel(panel, status? iconOn: iconOff, status);
+    drawPanel(panel, status ? iconOn : iconOff, status);
     drawButtons(panel, status);
   }
 
-  if (status && isButtonTouched(getOffButton(panel))){
+  if (status && isButtonTouched(getOffButton(panel))) {
     status = false;
-    drawPanel(panel, status ? iconOn: iconOff, status);
+    drawPanel(panel, status ? iconOn : iconOff, status);
     drawButtons(panel, status);
   }
 }
@@ -119,13 +155,15 @@ void setup() {
   M5.begin(cfg);
   M5.Display.fillScreen(BLACK);
 
-  drawPanels(); 
+  drawPanels();
 }
 
 void loop() {
   M5.update();
 
-  handlePanelTouch(lightPanel,lightStatus, lightIconOn, lightIcon );
+  handleScroll();
+
+  handlePanelTouch(lightPanel, lightStatus, lightIconOn, lightIcon);
   handlePanelTouch(pompPanel, pompStatus, pumpIconOn, pumpIconOff);
-  handlePanelTouch(windowPanel,windowStatus, windowIconOpen, windowIconClosed);
+  handlePanelTouch(windowPanel, windowStatus, windowIconOpen, windowIconClosed);
 }
