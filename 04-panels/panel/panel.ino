@@ -15,15 +15,19 @@ struct RectButton {
 struct Panel {
   int x, y, w, h;
   const char* label;
+  const char* textOn; 
+  const char* textOff; 
 };
 
 // drie panelen
-Panel lightPanel = { 10, 10, 300, 100, "Light" };
-Panel pompPanel = { 10, 130, 300, 100, "Pomp" };
+Panel lightPanel = { 10, 10, 300, 100, "Light", "On", "Off"};
+Panel pompPanel = { 10, 130, 300, 100, "Pomp", "On", "Off" };
+Panel windowPanel = {10, 250, 300,100, "Window", "Open", "Closed"};
 
 // Licht status
 bool lightStatus = false;
 bool pompStatus = false;
+bool windowStatus = false; 
 
 uint16_t panelColor = 0x18E3;
 uint16_t grey = 0x39C7;
@@ -48,6 +52,9 @@ void drawPanels() {
   
   drawPanel(pompPanel, pompStatus ? pumpIconOn : pumpIconOff, pompStatus);
   drawButtons(pompPanel, pompStatus);
+
+  drawPanel(windowPanel, windowStatus? windowIconOpen: windowIconClosed, windowStatus);
+  drawButtons(windowPanel, windowStatus); 
 }
 
 void drawSingleButton(const RectButton& button, bool isActive) {
@@ -83,11 +90,11 @@ bool isButtonTouched(const RectButton& button) {
 }
 
 RectButton getOnButton(const Panel& panel) {
-  return { panel.x + 20, panel.y + 50, 120, 40, "ON" };
+  return { panel.x + 20, panel.y + 50, 120, 40, panel.textOn };
 }
 
 RectButton getOffButton(const Panel& panel) {
-  return { panel.x + 160, panel.y + 50, 120, 40, "OFF" };
+  return { panel.x + 160, panel.y + 50, 120, 40, panel.textOff };
 }
 
 void handlePanelTouch(const Panel& panel, bool& status, const uint16_t* iconOn, const uint16_t* iconOff) {
@@ -118,4 +125,5 @@ void loop() {
 
   handlePanelTouch(lightPanel,lightStatus, lightIconOn, lightIcon );
   handlePanelTouch(pompPanel, pompStatus, pumpIconOn, pumpIconOff);
+  handlePanelTouch(windowPanel,windowStatus, windowIconOpen, windowIconOpen);
 }
