@@ -32,18 +32,20 @@ bool windowStatus = false;
 uint16_t panelColor = 0x18E3;
 uint16_t grey = 0x39C7;
 
+int scrollOffSet = 130; 
+
 void drawPanel(const Panel& panel, const uint16_t* icon, bool status) {
-  M5.Display.fillRoundRect(panel.x, panel.y, panel.w, panel.h, 12, panelColor);
+  M5.Display.fillRoundRect(panel.x, panel.y - scrollOffSet, panel.w, panel.h, 12, panelColor);
 
   // icon links in de titel rij
   M5.Display.setSwapBytes(true);
-  M5.Display.pushImage(panel.x + 20, panel.y + 10, 32, 32, icon, 0xFFFF); 
+  M5.Display.pushImage(panel.x + 20, panel.y + 10 - scrollOffSet, 32, 32, icon, 0xFFFF); 
 
   // Titel tekst opgeschoven naar rechts van het icoon
   M5.Display.setTextColor(WHITE, panelColor);
   M5.Display.setTextSize(2);
   M5.Display.setTextDatum(middle_left);
-  M5.Display.drawString(panel.label, panel.x + 62, panel.y + 26);
+  M5.Display.drawString(panel.label, panel.x + 62, panel.y + 26 - scrollOffSet);
 }
 
 void drawPanels() {
@@ -75,8 +77,8 @@ void drawButtons(const Panel& panel, bool status) {
   RectButton onButton = getOnButton(panel);
   RectButton offButton = getOffButton(panel);
 
-  drawSingleButton(onButton status);
-  drawSingleButton(offButton, status);
+  drawSingleButton(onButton, status);
+  drawSingleButton(offButton, !status);
 }
 
 bool isButtonTouched(const RectButton& button) {
@@ -90,11 +92,11 @@ bool isButtonTouched(const RectButton& button) {
 }
 
 RectButton getOnButton(const Panel& panel) {
-  return { panel.x + 20, panel.y + 50, 120, 40, panel.textOn };
+  return { panel.x , panel.y + 50 - scrollOffSet, 120, 40, panel.textOn };
 }
 
 RectButton getOffButton(const Panel& panel) {
-  return { panel.x + 160, panel.y + 50, 120, 40, panel.textOff };
+  return { panel.x + 160, panel.y + 50 - scrollOffSet, 120, 40, panel.textOff };
 }
 
 void handlePanelTouch(const Panel& panel, bool& status, const uint16_t* iconOn, const uint16_t* iconOff) {
