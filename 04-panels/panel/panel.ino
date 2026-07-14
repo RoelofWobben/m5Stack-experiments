@@ -72,11 +72,11 @@ void drawSingleButton(const RectButton& button, bool isActive) {
 
 
 void drawButtons(const Panel& panel, bool status) {
-  RectButton onButton(panel.x + 20, panel.y + 50, 120, 40, "ON");
-  RectButton offButton(panel.x + 160, panel.y + 50, 120, 40, "OFF");
+  RectButton onButton = getOnButton(panel);
+  RectButton offButton = getOffButton(panel);
 
-  drawSingleButton(onButton, status);
-  drawSingleButton(offButton, !status);
+  drawSingleButton(onButton status);
+  drawSingleButton(offButton, status);
 }
 
 bool isButtonTouched(const RectButton& button) {
@@ -125,5 +125,5 @@ void loop() {
 
   handlePanelTouch(lightPanel,lightStatus, lightIconOn, lightIcon );
   handlePanelTouch(pompPanel, pompStatus, pumpIconOn, pumpIconOff);
-  handlePanelTouch(windowPanel,windowStatus, windowIconOpen, windowIconOpen);
+  handlePanelTouch(windowPanel,windowStatus, windowIconOpen, windowIconClosed);
 }
