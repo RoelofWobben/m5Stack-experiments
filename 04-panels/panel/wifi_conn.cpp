@@ -7,7 +7,7 @@ void connectWifi() {
    Serial.println("Attempt to connect to: assortimens");
    WiFi.disconnect(true, true);
    WiFi.mode(WIFI_STA);
-   WiFi.begin(xxxxxxxx, xxxxxx);
+   WiFi.begin();
   
   while (WiFi.status() != WL_CONNECTED) {
    

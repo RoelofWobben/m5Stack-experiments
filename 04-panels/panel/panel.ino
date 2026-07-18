@@ -148,6 +148,18 @@ RectButton getOffButton(const Panel& panel) {
   return { panel.x + 160, panel.y + 50 - scrollOffSet, 120, 40, panel.textOff };
 }
 
+void publishStatus(const Panel& panel, bool status) {
+
+  if (panel.mqttTopic == nullptr) return; 
+
+  const char* payload = status? "ON" : "OFF";
+  MqttClient.publish(panel.mqttTopic, payload);
+
+  Serial.print(panel.label);
+  Serial.print(" -> ");
+  Serial.println(payload);
+}
+
 void handlePanelTouch(const Panel& panel, bool& status, const uint16_t* iconOn, const uint16_t* iconOff) {
 
   if (!status && isButtonTouched(getOnButton(panel))) {
