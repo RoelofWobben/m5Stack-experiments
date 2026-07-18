@@ -6,6 +6,8 @@
 #include "window_open.h"
 #include "light_off.h"
 #include "light_on.h"
+#include "wifi_conn.h"
+#include "mqtt_conn.h"
 
 struct RectButton {
   int x, y, w, h;
@@ -17,12 +19,13 @@ struct Panel {
   const char* label;
   const char* textOn;
   const char* textOff;
+  const char* mqttTopic; 
 };
 
 // drie panelen
-Panel lightPanel = { 10, 10, 300, 100, "Light", "On", "Off" };
-Panel pompPanel = { 10, 130, 300, 100, "Pomp", "On", "Off" };
-Panel windowPanel = { 10, 250, 300, 100, "Window", "Open", "Closed" };
+Panel lightPanel = { 10, 10, 300, 100, "Light", "On", "Off", "greenhouse/light/set" };
+Panel pompPanel = { 10, 130, 300, 100, "Pomp", "On", "Off", nullptr };
+Panel windowPanel = { 10, 250, 300, 100, "Window", "Open", "Closed", nullptr};
 
 // Licht status
 bool lightStatus = false;
@@ -46,7 +49,7 @@ int maxScrollOffSet = 110;
 M5Canvas canvas(&M5.Display);
 
 void flush() {
-  canvas.pushSprite(0,0);
+  canvas.pushSprite(0, 0);
 }
 
 
@@ -70,13 +73,14 @@ void handleScroll() {
     int newOffSet = scrollStartOffSet - deltaY;
     newOffSet = constrain(newOffSet, minScrollOffSet, maxScrollOffSet);
 
-    if (newOffSet != scrollOffSet){
+    if (newOffSet != scrollOffSet) {
       scrollOffSet = newOffSet;
-      M5.Display.fillScreen(BLACK);
       drawPanels();
     }
   }
 }
+
+
 
 void drawPanel(const Panel& panel, const uint16_t* icon, bool status) {
   canvas.fillRoundRect(panel.x, panel.y - scrollOffSet, panel.w, panel.h, 12, panelColor);
@@ -103,7 +107,7 @@ void drawPanels() {
   drawPanel(windowPanel, windowStatus ? windowIconOpen : windowIconClosed, windowStatus);
   drawButtons(windowPanel, windowStatus);
 
-  flush(); 
+  flush();
 }
 
 void drawSingleButton(const RectButton& button, bool isActive) {
@@ -150,28 +154,45 @@ void handlePanelTouch(const Panel& panel, bool& status, const uint16_t* iconOn, 
     status = true;
     drawPanel(panel, status ? iconOn : iconOff, status);
     drawButtons(panel, status);
+    flush();
+    publishStatus(panel, status);
   }
 
   if (status && isButtonTouched(getOffButton(panel))) {
     status = false;
     drawPanel(panel, status ? iconOn : iconOff, status);
     drawButtons(panel, status);
+    flush();
+    publishStatus(panel, status);
   }
 }
 
 void setup() {
+
+   Serial.begin(115200);
+   
+  connectWifi(); 
+
   auto cfg = M5.config();
   M5.begin(cfg);
   M5.Display.fillScreen(BLACK);
 
   canvas.setColorDepth(16);
   canvas.createSprite(M5.Display.width(), M5.Display.height());
+  canvas.setSwapBytes(true);
 
-  drawPanels(); 
+  Serial.begin(115200);
+
+  connectWifi(); 
+  connectMqtt(); 
+
+  drawPanels();
 }
 
 void loop() {
   M5.update();
+
+  ensureMqttConnected(); 
 
   handleScroll();
 
