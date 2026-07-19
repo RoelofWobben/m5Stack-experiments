@@ -4,9 +4,6 @@ const char* MQTT_SERVER = "mosquitto.local";
 const int MQTT_PORT = 1883;
 const char* MQTT_CLIENT_ID = "greenhouse-m5";
 
-const char* MQTT_USER = "xxxxx";
-const char* MQTT_PASS = "xxxxxx";
-
 WiFiClient espClientM5; 
 PubSubClient MqttClient(espClientM5); 
 

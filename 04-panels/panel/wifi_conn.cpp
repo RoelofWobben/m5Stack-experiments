@@ -4,10 +4,11 @@
 
 void connectWifi() {
 
-   Serial.println("Attempt to connect to: assortimens");
+   Serial.print("Attempt to connect to: ");
+   Serial.println(WIFI_SSID); 
    WiFi.disconnect(true, true);
    WiFi.mode(WIFI_STA);
-   WiFi.begin();
+   WiFi.begin(WIFI_SSID, WIFI_PASS);
   
   while (WiFi.status() != WL_CONNECTED) {
    
