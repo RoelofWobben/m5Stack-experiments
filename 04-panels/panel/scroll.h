@@ -2,14 +2,14 @@
 
 #include <M5Unified.h>
 
-int scrollOffSet = 0;
+extern int scrollOffSet;
 // voor swipe detectie
-int touchStartY = 0;
-int scrollStartOffSet = 0;
-bool isDragging = false;
+extern int touchStartY;
+extern int scrollStartOffSet;
+extern bool isDragging;
 
 // grenzen waarbinnen je mag scrollen
-int minScrollOffSet = 0;
-int maxScrollOffSet = 110;
+extern int minScrollOffSet;
+extern int maxScrollOffSet;
 
 void handleScroll();

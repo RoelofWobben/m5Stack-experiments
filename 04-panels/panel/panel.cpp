@@ -1,5 +1,18 @@
 #include "panel.h"
+#include "mqtt_conn.h"
+#include "pump_off.h"
+#include "pump_on.h"
+#include "window_closed.h"
+#include "window_open.h"
+#include "light_off.h"
+#include "light_on.h"
 
+extern Panel lightPanel; 
+extern bool lightStatus; 
+extern Panel pompPanel; 
+extern bool pompStatus; 
+extern Panel windowPanel;
+extern bool windowStatus;  
 
 void flush() {
   canvas.pushSprite(0, 0);
