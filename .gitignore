@@ -1,6 +1,4 @@
 04-panels/panel/secrets.h
 04-panels/panel/secrets.cpp
-greenhouse-nano/secrets.h
-greenhouse-nano/secrets.cpp
-
-
+greenhouse-nano/greeenhouse-nano/secrets.cpp
+greenhouse-nano/greeenhouse-nano/secrets.h

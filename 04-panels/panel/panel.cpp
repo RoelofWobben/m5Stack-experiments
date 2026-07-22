@@ -115,3 +115,15 @@ void drawPanels() {
   flush();
 }
 
+void mqttCallBack(char* topic, byte* payload, unsigned int length){
+  String message; 
+  for (unsigned int i = 0; i < length; i++) {
+    message += (char) payload[i];
+  }
+
+  Serial.print("M5 ontving op  ");
+  Serial.print(topic);
+  Serial.print(": ");
+  Serial.print(message);
+}
+

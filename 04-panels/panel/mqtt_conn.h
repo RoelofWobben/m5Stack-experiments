@@ -1,3 +1,4 @@
+#include <sys/_types.h>
 #pragma once
 
 #include "WiFi.h"
@@ -9,3 +10,4 @@ extern PubSubClient MqttClient;
 
 bool connectMqtt();
 void ensureMqttConnected();
+void mqttCallback(char* topic, byte* payload, unsigned int length);

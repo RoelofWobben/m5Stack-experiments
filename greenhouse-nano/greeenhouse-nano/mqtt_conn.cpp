@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include "mqtt_conn.h"
 #include <PubSubClient.h>
+#include "leds.h"
 
 const char* MQTT_SERVER = "mosquitto.local";
 const int MQTT_PORT = 1883;
@@ -29,6 +30,21 @@ bool connectMqtt() {
 }
 
 void MqttCallBack(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Topic: ");
-  Serial.println(topic); 
+  String message; 
+  for (unsigned int i = 0; i < length; i++) {
+    message += (char)payload[i]; 
+  }
+
+  Serial.print("Bericht ontvangen op ");
+  Serial.print(topic);
+  Serial.print(": ");
+  Serial.println(message);
+
+  if (String(topic) == "greenhouse/light/set"){
+    if (message == "ON") {
+      turnLightOn();
+    } else if (message == "OFF") {
+      turnLightOff();
+    }
+  }
 }
